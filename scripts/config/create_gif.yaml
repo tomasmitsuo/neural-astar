@@ -1,15 +1,17 @@
 seed: 1234
-dataset: "planning-datasets/data/mpd/mazes_032_moore_c8"
+
+#dataset: "planning-datasets/data/mpd/multiple_bugtraps_032_moore_c8"
+dataset: "planning-datasets/data/mpd/single_bugtrap_032_moore_c8"
 modeldir: "model"
 resultdir: "gif"
-planner: "na"   # either na or va
+planner: "na"   # either na or va (NEURAL ASTAR OU VANILLA ASTAR)
 
 encoder:
   input: "m+"
   arch: "CNN"
   depth: 4
 
-problem_id: 1
+problem_id: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20] # QUANTIDADE DE PROBLEMAS QUE QUEREMOS
 
 
 hydra:

@@ -1,17 +1,18 @@
 import os
 
 import hydra
-import moviepy.editor as mpy
+from moviepy import editor as mpy
 from neural_astar.planner import NeuralAstar, VanillaAstar
 from neural_astar.utils.data import create_dataloader, visualize_results
 from neural_astar.utils.training import load_from_ptl_checkpoint
 
-
+# ESCOLHE OS PARÂMETROS
 @hydra.main(config_path="config", config_name="create_gif")
-def main(config):
-    dataname = os.path.basename(config.dataset)
 
-    if config.planner == "na":
+def main(config):
+    dataname = os.path.basename(config.dataset) # SELECIONA O DATASET ESCOLHIDO
+
+    if config.planner == "na": # ESCOLHE O ALGORITMO
         planner = NeuralAstar(
             encoder_input=config.encoder.input,
             encoder_arch=config.encoder.arch,
@@ -30,6 +31,8 @@ def main(config):
     savedir = f"{config.resultdir}/{config.planner}"
     os.makedirs(savedir, exist_ok=True)
 
+    # CARREGA OS DADOS DESEJADOS
+    
     dataloader = create_dataloader(
         config.dataset + ".npz",
         "test",
@@ -42,21 +45,27 @@ def main(config):
         map_designs, start_maps, goal_maps, store_intermediate_results=True
     )
 
-    outputs = planner(
-        map_designs[problem_id : problem_id + 1],
-        start_maps[problem_id : problem_id + 1],
-        goal_maps[problem_id : problem_id + 1],
-        store_intermediate_results=True,
-    )
-    frames = [
-        visualize_results(
-            map_designs[problem_id : problem_id + 1], intermediate_results, scale=4
-        )
-        for intermediate_results in outputs.intermediate_results
-    ]
-    clip = mpy.ImageSequenceClip(frames + [frames[-1]] * 15, fps=30)
-    clip.write_gif(f"{savedir}/video_{dataname}_{problem_id:04d}.gif")
+    # CRIA OS GIFS
+     # Itera sobre uma lista de problem IDs
+    for problem_id in config.problem_id:
+        print(f"Processing problem_id: {problem_id}")
 
+        outputs = planner(
+            map_designs[problem_id : problem_id + 1],
+            start_maps[problem_id : problem_id + 1],
+            goal_maps[problem_id : problem_id + 1],
+            store_intermediate_results=True,
+        )
+
+        frames = [
+            visualize_results(
+                map_designs[problem_id : problem_id + 1], intermediate_results, scale=4
+            )
+            for intermediate_results in outputs.intermediate_results
+        ]
+        clip = mpy.ImageSequenceClip(frames + [frames[-1]] * 15, fps=30)
+        clip.write_gif(f"{savedir}/video_{dataname}_{problem_id:04d}.gif")
+        print(f"Saved GIF for problem_id {problem_id} at {savedir}/video_{dataname}_{problem_id:04d}.gif")
 
 if __name__ == "__main__":
     main()

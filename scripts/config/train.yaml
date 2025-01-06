@@ -1,5 +1,7 @@
 seed: 1234
-dataset: "planning-datasets/data/mpd/mazes_032_moore_c8"
+#dataset: "planning-datasets/data/mpd/mazes_032_moore_c8"
+#dataset: "planning-datasets/data/mpd/multiple_bugtraps_032_moore_c8"
+dataset: "planning-datasets/data/mpd/single_bugtrap_032_moore_c8"
 logdir: "model"
 Tmax: 0.25
 
